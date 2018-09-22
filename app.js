@@ -74,11 +74,11 @@ app.get("/playlists/:playlistId", async (req, res) => {
 
 app.post("/playlists/:playlistId", async (req, res) => {
   const { playlistId } = req.params;
-  const { trackName } = req.body;
+  const { track } = req.body;
   let data;
 
   try {
-    data = await playlistDb.addTrackToPlaylist(playlistId, trackName);
+    data = await playlistDb.addTrackToPlaylist(playlistId, track);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
