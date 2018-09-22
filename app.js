@@ -4,6 +4,14 @@ const logger = require("morgan");
 const cors = require("cors");
 
 const lastfm = require("./lib/lastfm");
+const PlaylistDB = require("./lib/playlist");
+
+const playlistDb = new PlaylistDB(process.env.GOOGLE_DRIVE_SPREADSHEET_ID, {
+  credentials: {
+    email: process.env.GOOGLE_DRIVE_EMAIL,
+    privateKey: process.env.GOOGLE_DRIVE_PRIVATE_KEY.split("\\n").join("\n")
+  }
+});
 
 const app = express();
 
@@ -44,6 +52,33 @@ app.get("/albums/:albumId", async (req, res) => {
 
   try {
     data = await lastfm.getAlbum(albumId);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+
+  res.json(data);
+});
+
+app.get("/playlists/:playlistId", async (req, res) => {
+  const { playlistId } = req.params;
+  let data;
+
+  try {
+    data = await playlistDb.getPlaylist(playlistId);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+
+  res.json(data);
+});
+
+app.post("/playlists/:playlistId", async (req, res) => {
+  const { playlistId } = req.params;
+  const { trackName } = req.body;
+  let data;
+
+  try {
+    data = await playlistDb.addTrackToPlaylist(playlistId, trackName);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
