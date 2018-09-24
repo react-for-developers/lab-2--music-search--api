@@ -75,6 +75,11 @@ app.get("/playlists/:playlistId", async (req, res) => {
 app.post("/playlists/:playlistId", async (req, res) => {
   const { playlistId } = req.params;
   const { track } = req.body;
+
+  if (!track) {
+    return res.status(400).json({ error: "Missing track in body" });
+  }
+
   let data;
 
   try {
